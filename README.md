@@ -166,8 +166,6 @@ Implement basic error handling for invalid user inputs or API failures.
 
 ## Entity Relation Diagram
 
-![Entity Relation Diagram](./ERD.png)
-
 ## Frontend Requirements
 
 ### Technologies
