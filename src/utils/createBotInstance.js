@@ -1,4 +1,4 @@
-import { openai } from "../config/apikey";
+import { openai } from "../config/apiconfig";
 import { handleRequiresAction } from "../services/botHandleActionService";
 export async function createThread() {
     const thread = await openai.beta.threads.create();

@@ -1,4 +1,4 @@
-import { openai } from "../config/apikey";
+import { openai } from "../config/apiconfig";
 import { bookRoom, fetchRooms } from "./roomBookingService";
 import { handleRunStatus } from "../utils/createBotInstance";
 export async function handleRequiresAction(res, thread, run) {
@@ -16,7 +16,7 @@ export async function handleRequiresAction(res, thread, run) {
                         output: await fetchRooms(),
                     };
                 } else if (name === "bookRoom") {
-                    const { id, fullName, email, nights } = args;
+                    const { id, fullName, email, nights } = JSON.parse(args);
                     return {
                         tool_call_id: tool.id,
                         output: await bookRoom(id, fullName, email, nights),
