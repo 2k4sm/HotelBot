@@ -1,6 +1,6 @@
 import { openai } from "../config/apiconfig";
 import { bookRoom, fetchRooms } from "./roomBookingService";
-import { handleRunStatus } from "../utils/createBotInstance";
+import { handleRunStatus } from "../utils/botHelpers";
 export async function handleRequiresAction(res, thread, run) {
     if (
         run.required_action &&

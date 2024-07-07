@@ -1,10 +1,11 @@
 
 import express from "express"
-import { chat } from "../controllers/chat.controllers";
+import { assistantChat, completionsChat } from "../controllers/chat.controllers";
 
 const router = express.Router();
 
-router.post('/', chat)
+router.post('/assistant', assistantChat);
+router.post('/completion', completionsChat);
 
 
 export default router;
