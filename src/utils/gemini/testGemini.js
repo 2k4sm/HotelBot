@@ -1,16 +1,38 @@
-import { gemini } from "../../config/apiconfig";
-import { toolFunctions, functions } from "./geminiFunctionCalling";
+import { FunctionDeclarationSchemaType } from "@google/generative-ai";
+import { gemini as genAI } from "../../config/apiconfig";
 
-export function createModel() {
-    const model = gemini.getGenerativeModel(
-        { model: "gemini-1.5-pro-latest", toolFunctions },
+export async function run(message) {
+    const functions = {
+        convertCtoF: ({ value }) => {
+            const num = typeof value === "string" ? parseFloat(value) : value;
+            if (!Number.isFinite(num)) {
+                throw new Error("Value should finite number");
+            }
+            return (num * 9) / 5 + 32;
+        },
+    };
+    const tools = [
+        {
+            functionDeclarations: [
+                {
+                    name: "convertCtoF",
+                    description: "Convert temperature from Celsius to Fahrenheit",
+                    parameters: {
+                        type: FunctionDeclarationSchemaType.OBJECT,
+                        properties: {
+                            value: { type: FunctionDeclarationSchemaType.NUMBER },
+                        },
+                        required: ["value"],
+                    },
+                },
+            ],
+        },
+    ];
+
+    const model = genAI.getGenerativeModel(
+        { model: "gemini-1.5-flash-latest", tools },
         { apiVersion: "v1beta" },
     );
-
-    return model
-}
-
-export async function sendMessageAndCheckForCalls(model, message) {
 
     const prompt = {
         role: "user",
@@ -24,7 +46,6 @@ export async function sendMessageAndCheckForCalls(model, message) {
     const result = await model.generateContent({
         contents: [prompt],
     });
-
     const response = result.response;
     console.dir(response, { depth: null });
     console.log(response.functionCalls())
@@ -34,12 +55,11 @@ export async function sendMessageAndCheckForCalls(model, message) {
     }
 
     const content = result.response.candidates[0].content;
-
     if (content.parts.length === 0) {
         throw new Error("No parts");
     }
-
     const fc = content.parts[0].functionCall;
+    const text = content.parts.map(({ text }) => text).join("");
     if (fc) {
         const { name, args } = fc;
         const fn = functions[name];
@@ -66,7 +86,7 @@ export async function sendMessageAndCheckForCalls(model, message) {
         const response2 = await model.generateContent(request2);
         const result2 = response2.response;
         return result2;
-    } else {
-        return result;
+    } else if (text) {
+        console.log(text);
     }
 }
