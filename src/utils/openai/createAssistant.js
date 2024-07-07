@@ -5,21 +5,16 @@ export async function createAssistantIfNeeded() {
         (assistant) => assistant.name === "HotelBot_v0"
     );
 
-    if (existingAssistant) {
-        console.log("Assistant already exists:", existingAssistant);
-        return existingAssistant;
-    }
-
-    const assistant = await openai.beta.assistants.create({
+    const assistantConfig = {
         name: "HotelBot_v0",
         model: "gpt-4o",
-        instructions: "You are a Hotel Booking chatbot. You have to assist users in booking rooms in the hotel.",
+        instructions: "As a Hotel Booking chatbot, You assist with room reservations and handle complaints using booking IDs",
         tools: [
             {
                 type: 'function',
                 function: {
                     name: 'getAvailableRooms',
-                    description: 'Get all the rooms in the hotel.',
+                    description: 'Retrieve detailed information about all available rooms in the hotel.',
                     parameters: {
                         type: 'object',
                         properties: {
@@ -43,7 +38,7 @@ export async function createAssistantIfNeeded() {
                 type: 'function',
                 function: {
                     name: 'bookRoom',
-                    description: 'Create a booking for the user in requested room.',
+                    description: 'Create a booking for the user in their requested room and provide them with a booking ID.',
                     parameters: {
                         type: 'object',
                         properties: {
@@ -68,8 +63,84 @@ export async function createAssistantIfNeeded() {
                     }
                 }
             },
-        ],
+            {
+                type: 'function',
+                function: {
+                    name: 'registerComplaint',
+                    description: 'Register a complaint for the user associated with their booking id.',
+                    parameters: {
+                        type: 'object',
+                        properties: {
+                            bookingId: {
+                                type: 'number',
+                                description: 'The booking id of the user with which he booked the room.'
+                            }
+                        },
+                        required: ["id"]
+                    }
+                }
+            },
+            {
+                type: 'function',
+                function: {
+                    name: 'cancelBooking',
+                    description: 'Cancel the booking associated with the user and booking id.',
+                    parameters: {
+                        type: 'object',
+                        properties: {
+                            userName: {
+                                type: 'string',
+                                description: 'The name of the user who is cancelling the booking.'
+                            },
+                            bookingId: {
+                                type: 'number',
+                                description: 'The booking id of the user with which he booked the room.'
+                            }
+                        },
+                        required: ["id"]
+                    }
+                }
+            },
+            {
+                type: 'function',
+                function: {
+                    name: 'getNextAvailableDate',
+                    description: 'Get the booking status associated with the user and booking id.',
+                    parameters: {
+                        type: 'object',
+                        properties: {
+                            userName: {
+                                type: 'string',
+                                description: 'The name of the user who is cancelling the booking.'
+                            },
+                            bookingId: {
+                                type: 'number',
+                                description: 'The booking id of the user with which he booked the room.'
+                            }
+                        },
+                        required: ["id"]
+                    }
+                }
+            }
+        ]
+    }
+
+    if (existingAssistant) {
+        console.log("Assistant already exists:", existingAssistant);
+    } else {
+        const assistant = await openai.beta.assistants.create({
+            ...assistantConfig
+        });
+        return assistant;
+    }
+
+    await openai.beta.assistants.update(existingAssistant.id, {
+        ...assistantConfig
     })
+
+    const assistant = await openai.beta.assistants.retrieve(
+        existingAssistant.id
+    );
 
     return assistant;
 }

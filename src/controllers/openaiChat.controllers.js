@@ -1,15 +1,22 @@
 import { createThread, runAssistant, handleRunStatus, createMessage } from "../utils/openai/openaiBotHelpers";
 import { createAssistantIfNeeded } from "../utils/openai/createAssistant";
 
-export const chatThread = await createThread();
-export const assistant = await createAssistantIfNeeded();
 export const assistantChat = async (req, res) => {
 
-    const { message } = req.body;
+    const { message, threadId } = req.body;
 
-    await createMessage(chatThread, message);
+    await createMessage(threadId, message);
 
-    const runObject = await runAssistant(chatThread, assistant);
+    const runObject = await runAssistant(threadId);
 
-    await handleRunStatus(res, chatThread, runObject);
+    await handleRunStatus(res, threadId, runObject);
 };
+
+export const getThread = async (_, res) => {
+    try {
+        const thread = await createThread();
+        res.json({ thread: thread.id });
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+}

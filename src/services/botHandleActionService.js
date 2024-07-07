@@ -2,7 +2,7 @@ import { openai } from "../config/apiconfig";
 import { bookRoom, fetchRooms } from "./roomBookingService";
 import { handleRunStatus } from "../utils/openai/openaiBotHelpers";
 
-export async function handleRequiresAction(res, thread, run) {
+export async function handleRequiresAction(res, threadId, run) {
     if (
         run.required_action &&
         run.required_action.submit_tool_outputs &&
@@ -40,7 +40,7 @@ export async function handleRequiresAction(res, thread, run) {
         if (toolOutputs.length > 0) {
             try {
                 run = await openai.beta.threads.runs.submitToolOutputsAndPoll(
-                    thread.id,
+                    threadId,
                     run.id,
                     { tool_outputs: toolOutputs },
                 );
@@ -54,7 +54,7 @@ export async function handleRequiresAction(res, thread, run) {
             console.log("No valid tool outputs to submit.");
         }
 
-        return await handleRunStatus(res, thread, run);
+        return await handleRunStatus(res, threadId, run);
     } else {
         console.log("No required action for tool outputs.");
         res.status(400).json({ error: "No required action for tool outputs." });
