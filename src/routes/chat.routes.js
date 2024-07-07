@@ -1,11 +1,9 @@
 
 import express from "express"
-import { assistantChat, completionsChat } from "../controllers/chat.controllers";
+import { assistantChat } from "../controllers/openaiChat.controllers";
 
 const router = express.Router();
 
-router.post('/assistant', assistantChat);
-router.post('/completion', completionsChat);
-
+router.post('/openai/chat', assistantChat);
 
 export default router;

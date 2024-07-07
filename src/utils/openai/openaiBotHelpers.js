@@ -1,5 +1,5 @@
-import { openai } from "../config/apiconfig";
-import { handleRequiresAction } from "../services/botHandleActionService";
+import { openai } from "../../config/apiconfig";
+import { handleRequiresAction } from "../../services/botHandleActionService";
 export async function createThread() {
     const thread = await openai.beta.threads.create();
     console.log(thread);
@@ -36,8 +36,9 @@ export async function handleRunStatus(res, thread, run) {
             messages.push(message.content);
         });
 
+        const retMessage = messages[0];
         console.log(messages.data);
-        res.json({ messages });
+        res.json({ retMessage });
 
     } else if (status === "requires_action") {
         console.log(run.status);

@@ -1,20 +1,38 @@
 export async function fetchRooms() {
-    const rooms = await fetch("https://bot9assignement.deno.dev/rooms");
-    return JSON.stringify(rooms.body);
+    try {
+        const response = await fetch("https://bot9assignement.deno.dev/rooms");
+        if (!response.ok) {
+            throw new Error(`Error fetching rooms: ${response.statusText}`);
+        }
+        const rooms = await response.json();
+        return JSON.stringify(rooms);
+    } catch (error) {
+        console.error(error);
+        return JSON.stringify({ error: error.message });
+    }
 }
 
 export async function bookRoom(id, fullName, email, nights) {
-    const booking = await fetch("https://bot9assignement.deno.dev/book", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            roomId: id,
-            fullName: fullName,
-            email: email,
-            nights: nights
-        }),
-    });
-    return JSON.stringify(booking.body);
+    try {
+        const response = await fetch("https://bot9assignement.deno.dev/book", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                roomId: id,
+                fullName: fullName,
+                email: email,
+                nights: nights,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error(`Error booking room: ${response.statusText}`);
+        }
+        const booking = await response.json();
+        return JSON.stringify(booking);
+    } catch (error) {
+        console.error(error);
+        return JSON.stringify({ error: error.message });
+    }
 }

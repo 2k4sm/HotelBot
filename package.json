@@ -7,6 +7,7 @@
     "dev": "bun run --hot src/server.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.14.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "openai": "^4.52.3",

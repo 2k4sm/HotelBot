@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json())
 
 let chatRouter = router;
-app.use('/chat', chatRouter);
+app.use('/api', chatRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

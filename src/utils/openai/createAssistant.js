@@ -1,18 +1,18 @@
-import { openai } from "../config/apiconfig"
+import { openai } from "../../config/apiconfig"
 export async function createAssistantIfNeeded() {
-    // const existingAssistants = await openai.beta.assistants.list();
-    // const existingAssistant = existingAssistants.data.find(
-    //     (assistant) => assistant.name === "HotelBot_v0"
-    // );
+    const existingAssistants = await openai.beta.assistants.list();
+    const existingAssistant = existingAssistants.data.find(
+        (assistant) => assistant.name === "HotelBot_v0"
+    );
 
-    // if (existingAssistant) {
-    //     console.log("Assistant already exists:", existingAssistant);
-    //     return existingAssistant;
-    // }
+    if (existingAssistant) {
+        console.log("Assistant already exists:", existingAssistant);
+        return existingAssistant;
+    }
 
     const assistant = await openai.beta.assistants.create({
-        name: "HotelBot_v2",
-        model: "gpt-3.5-turbo-16k-0613",
+        name: "HotelBot_v0",
+        model: "gpt-4o",
         instructions: "You are a Hotel Booking chatbot. You have to assist users in booking rooms in the hotel.",
         tools: [
             {
