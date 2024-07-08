@@ -1,3 +1,5 @@
+import { createBooking, deleteBooking, getAllBookings, getBookingById, updateBooking } from "../models/bookings";
+
 export async function fetchRooms() {
     try {
         const response = await fetch("https://bot9assignement.deno.dev/rooms");
@@ -30,6 +32,8 @@ export async function bookRoom(id, fullName, email, nights) {
             throw new Error(`Error booking room: ${response.statusText}`);
         }
         const booking = await response.json();
+
+        createBooking(booking);
         return JSON.stringify(booking);
     } catch (error) {
         console.error(error);
@@ -37,10 +41,35 @@ export async function bookRoom(id, fullName, email, nights) {
     }
 }
 
-export async function registerComplaint(bookingId) {
-    return JSON.stringify({ status: `Complaint Successfully Registered for Booking ID: ${bookingId}` });
+export async function getBooking(bookingId) {
+    try {
+        const booking = await getBookingById(bookingId);
+        if (!booking) {
+            return JSON.stringify("Booking not found");
+        }
+
+        return JSON.stringify(booking);
+    } catch (error) {
+        console.error(error);
+        return JSON.stringify({ error: error.message });
+    }
 }
 
 export async function cancelBooking(userName, bookingId) {
-    return JSON.stringify({ status: `Booking Canceled for User: ${userName} with Booking ID: ${bookingId}` });
+
+    try {
+        const booking = await getBookingById(bookingId);
+        if (!booking) {
+            return JSON.stringify("Booking not found");
+        }
+
+        await updateBooking(bookingId, { message: "Booking cancelled" });
+
+        return JSON.stringify({ status: `Booking Canceled for User: ${userName} with Booking ID: ${bookingId}` });
+
+    } catch (error) {
+        console.log(error);
+        return JSON.stringify({ error: error.message });
+    }
+
 }

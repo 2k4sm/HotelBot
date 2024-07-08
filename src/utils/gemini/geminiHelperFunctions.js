@@ -1,4 +1,4 @@
-import { fetchRooms, bookRoom, registerComplaint, cancelBooking } from "../../services/roomBooking.service";
+import { fetchRooms, bookRoom, cancelBooking, getBooking } from "../../services/roomBooking.service";
 import { FunctionDeclarationSchemaType } from "@google/generative-ai";
 export const toolFunctions = [
     {
@@ -51,8 +51,8 @@ export const toolFunctions = [
                 },
             },
             {
-                name: "registerComplaint",
-                description: "Register a complaint for the user associated with their booking id.",
+                name: "getBooking",
+                description: "Retrieves details of a booking from the database associated with the booking id.",
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
@@ -60,12 +60,8 @@ export const toolFunctions = [
                             type: FunctionDeclarationSchemaType.NUMBER,
                             description: 'The booking id of the user with which he booked the room.'
                         },
-                        issue: {
-                            type: FunctionDeclarationSchemaType.STRING,
-                            description: 'The issue with which the user is facing. eg., "Dirty Room", "No Internet"'
-                        }
                     },
-                    required: ["bookingId", "issue"]
+                    required: ["bookingId"]
                 }
             },
             {
@@ -99,10 +95,11 @@ export const functions = {
     bookRoom: async ({ id, fullName, email, nights }) => {
         return await bookRoom(id, fullName, email, nights);
     },
-    registerComplaint: async ({ bookingId, issue }) => {
-        return await registerComplaint(bookingId, issue);
-    },
+
     cancelBooking: async ({ userName, bookingId }) => {
         return await cancelBooking(userName, bookingId);
+    },
+    getBooking: async ({ bookingId }) => {
+        return await getBooking(bookingId);
     }
 };

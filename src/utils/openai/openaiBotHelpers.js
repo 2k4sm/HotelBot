@@ -1,6 +1,6 @@
 import { openai } from "../../config/apiconfig";
 import { createAssistantIfNeeded } from "./createOpenaiAssistant";
-import { bookRoom, fetchRooms, cancelBooking, registerComplaint } from "../../services/roomBooking.service";
+import { bookRoom, fetchRooms, cancelBooking, getBooking } from "../../services/roomBooking.service";
 export async function createThread() {
     const thread = await openai.beta.threads.create();
     console.log(thread);
@@ -74,9 +74,9 @@ export async function handleRequiresAction(res, threadId, run) {
                 } else if (name === "bookRoom") {
                     const { id, fullName, email, nights } = JSON.parse(args);
                     output = await bookRoom(id, fullName, email, nights);
-                } else if (name === "registerComplaint") {
-                    const { bookingId, issue } = JSON.parse(args);
-                    output = await registerComplaint(bookingId, issue);
+                } else if (name === "getBooking") {
+                    const { bookingId } = JSON.parse(args);
+                    output = await getBooking(bookingId);
                 } else if (name === "cancelBooking") {
                     const { userName, bookingId } = JSON.parse(args);
                     output = await cancelBooking(userName, bookingId);

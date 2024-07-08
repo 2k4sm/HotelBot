@@ -66,8 +66,8 @@ export async function createAssistantIfNeeded() {
             {
                 type: 'function',
                 function: {
-                    name: 'registerComplaint',
-                    description: 'Register a complaint for the user associated with their booking id.',
+                    name: 'getBooking',
+                    description: 'Retrieves details of a booking from the database associated with the booking id.',
                     parameters: {
                         type: 'object',
                         properties: {
@@ -75,12 +75,8 @@ export async function createAssistantIfNeeded() {
                                 type: 'number',
                                 description: 'The booking id of the user with which he booked the room.'
                             },
-                            issue: {
-                                type: 'string',
-                                description: 'The issue with which the user is facing. eg., "Dirty Room", "No Internet"'
-                            }
                         },
-                        required: ["bookindid", "issue"]
+                        required: ["bookindid"]
                     }
                 }
             },
