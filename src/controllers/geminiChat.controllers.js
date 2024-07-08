@@ -30,7 +30,7 @@ export const geminiChat = async (req, res) => {
 
             const content = { content: result.response.candidates[0].content }
 
-            res.json(content);
+            res.json({ result: content });
         } catch (error) {
             res.status(400).json({ error: 'Invalid Arguments Error' + error.message });
 

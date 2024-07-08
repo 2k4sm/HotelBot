@@ -1,0 +1,3 @@
+[submodule "HotelBotClient"]
+	path = HotelBotClient
+	url = git@github.com:2k4sm/HotelBotClient.git
