@@ -4,7 +4,7 @@
 Clone the repository with the client submodule:
 
 ```bash
-	git clone --recursive git@github.com:2k4sm/HotelBot.git
+git clone --recursive git@github.com:2k4sm/HotelBot.git
 ```
 
 __Follow this to get started with backend__ **[Getting Started With Backend](./Getting_Started_Backend.md)**
@@ -40,6 +40,13 @@ The project involves creating a chatbot for hotel booking management. The bot wi
 ### Main Endpoint
 
 **POST /chat**: Handle user messages and return chatbot responses.
+
+```json
+endpoint : POST "https://api-hotelbot.onrender.com/api/gemini/chat",
+payload : {
+	{message : <"message input">}
+}
+```
 
 ### External API Interactions
 
