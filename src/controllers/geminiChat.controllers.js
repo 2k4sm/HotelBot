@@ -1,11 +1,23 @@
 import { gemini } from "../config/apiconfig";
-import { createModel, sendMessageAndCheckForCalls } from "../utils/gemini/createGeminiAssistant";
+import { createModel, sendMessageAndProcessCalls, createChat } from "../utils/gemini/createGeminiAssistant";
+import { toolFunctions } from "../utils/gemini/geminiHelperFunctions";
 
-const model = createModel();
+const modelName = "gemini-1.5-flash-latest"
+const instructions = "As a Hotel Booking chatbot, You assist with room reservations and handle complaints using booking IDs"
+
+const model = createModel(modelName, toolFunctions, instructions);
+const history = [];
 export const geminiChat = async (req, res) => {
-    const { message } = req.body;
+    try {
+        const { message } = req.body;
 
-    const result = await sendMessageAndCheckForCalls(model, message);
+        const chat = createChat(model, history);
 
-    res.json({ result });
+        const result = await sendMessageAndProcessCalls(chat, message, history);
+
+        res.json({ result });
+    } catch (error) {
+        console.error('Error handling chat message:', error);
+        res.status(500).json({ error: 'Internal server error' + error.message });
+    }
 }

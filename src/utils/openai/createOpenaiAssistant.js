@@ -74,9 +74,13 @@ export async function createAssistantIfNeeded() {
                             bookingId: {
                                 type: 'number',
                                 description: 'The booking id of the user with which he booked the room.'
+                            },
+                            issue: {
+                                type: 'string',
+                                description: 'The issue with which the user is facing. eg., "Dirty Room", "No Internet"'
                             }
                         },
-                        required: ["id"]
+                        required: ["bookindid", "issue"]
                     }
                 }
             },
@@ -97,31 +101,10 @@ export async function createAssistantIfNeeded() {
                                 description: 'The booking id of the user with which he booked the room.'
                             }
                         },
-                        required: ["id"]
+                        required: ["bookingid"]
                     }
                 }
             },
-            {
-                type: 'function',
-                function: {
-                    name: 'getNextAvailableDate',
-                    description: 'Get the booking status associated with the user and booking id.',
-                    parameters: {
-                        type: 'object',
-                        properties: {
-                            userName: {
-                                type: 'string',
-                                description: 'The name of the user who is cancelling the booking.'
-                            },
-                            bookingId: {
-                                type: 'number',
-                                description: 'The booking id of the user with which he booked the room.'
-                            }
-                        },
-                        required: ["id"]
-                    }
-                }
-            }
         ]
     }
 

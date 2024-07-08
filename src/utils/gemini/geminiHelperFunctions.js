@@ -1,11 +1,11 @@
-import { fetchRooms, bookRoom } from "../../services/roomBookingService";
+import { fetchRooms, bookRoom, registerComplaint, cancelBooking } from "../../services/roomBooking.service";
 import { FunctionDeclarationSchemaType } from "@google/generative-ai";
 export const toolFunctions = [
     {
         functionDeclarations: [
             {
                 name: "getAvailableRooms",
-                description: "Get all the rooms in the hotel.",
+                description: "Retrieve detailed information about all available rooms in the hotel.",
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
@@ -26,7 +26,7 @@ export const toolFunctions = [
             },
             {
                 name: "bookRoom",
-                description: "Create a booking for the user in requested room.",
+                description: 'Create a booking for the user in their requested room and provide them with a booking ID.',
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
@@ -40,14 +40,51 @@ export const toolFunctions = [
                         },
                         email: {
                             type: FunctionDeclarationSchemaType.STRING,
-                            description: 'The email fo the person who is booking the room. eg., john.doe@example.com'
+                            description: 'The email of the person who is booking the room. eg., john.doe@example.com'
                         },
                         nights: {
                             type: FunctionDeclarationSchemaType.NUMBER,
                             description: 'The number of nights the room is to be booked. eg., 1,2,3'
                         }
                     },
+                    required: ["fullName", "email", "nights"],
                 },
+            },
+            {
+                name: "registerComplaint",
+                description: "Register a complaint for the user associated with their booking id.",
+                parameters: {
+                    type: FunctionDeclarationSchemaType.OBJECT,
+                    properties: {
+                        bookingId: {
+                            type: FunctionDeclarationSchemaType.NUMBER,
+                            description: 'The booking id of the user with which he booked the room.'
+                        },
+                        issue: {
+                            type: FunctionDeclarationSchemaType.STRING,
+                            description: 'The issue with which the user is facing. eg., "Dirty Room", "No Internet"'
+                        }
+                    },
+                    required: ["bookingId", "issue"]
+                }
+            },
+            {
+                name: "cancelBooking",
+                description: "Cancel the booking associated with the user and booking id.",
+                parameters: {
+                    type: FunctionDeclarationSchemaType.OBJECT,
+                    properties: {
+                        userName: {
+                            type: FunctionDeclarationSchemaType.STRING,
+                            description: 'The name of the user who is cancelling the booking.'
+                        },
+                        bookingId: {
+                            type: FunctionDeclarationSchemaType.NUMBER,
+                            description: 'The booking id of the user with which he booked the room.'
+                        }
+                    },
+                    required: ["bookingId"]
+                }
             }
 
         ],
@@ -62,4 +99,10 @@ export const functions = {
     bookRoom: async ({ id, fullName, email, nights }) => {
         return await bookRoom(id, fullName, email, nights);
     },
+    registerComplaint: async ({ bookingId, issue }) => {
+        return await registerComplaint(bookingId, issue);
+    },
+    cancelBooking: async ({ userName, bookingId }) => {
+        return await cancelBooking(userName, bookingId);
+    }
 };

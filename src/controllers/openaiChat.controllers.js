@@ -1,5 +1,4 @@
 import { createThread, runAssistant, handleRunStatus, createMessage } from "../utils/openai/openaiBotHelpers";
-import { createAssistantIfNeeded } from "../utils/openai/createAssistant";
 
 export const assistantChat = async (req, res) => {
 
