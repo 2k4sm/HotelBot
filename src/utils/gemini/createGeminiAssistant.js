@@ -3,32 +3,32 @@ import { toolFunctions, functions } from "./geminiFunctionCalling";
 
 export function createModel() {
     const model = gemini.getGenerativeModel(
-        { model: "gemini-1.5-pro-latest", toolFunctions },
+        { model: "gemini-1.5-pro-latest", tools: toolFunctions },
         { apiVersion: "v1beta" },
     );
 
     return model
 }
 
+export function createChatSession(model) {
+    const chatSession = model.startChat({
+        history: [],
+    });
+
+    return chatSession;
+}
+
 export async function sendMessageAndCheckForCalls(model, message) {
 
-    const prompt = {
-        role: "user",
-        parts: [
-            {
-                text: message,
-            },
-        ],
-    };
+    const prompt = message
 
-    const result = await model.generateContent({
-        contents: [prompt],
-    });
+    const chat = createChatSession(model)
+
+    const result = await chat.sendMessage(prompt);
 
     const response = result.response;
     console.dir(response, { depth: null });
     console.log(response.functionCalls())
-
     if (response.candidates.length === 0) {
         throw new Error("No candidates");
     }
@@ -46,24 +46,18 @@ export async function sendMessageAndCheckForCalls(model, message) {
         if (!fn) {
             throw new Error(`Unknown function "${name}"`);
         }
-        const fr = {
-            role: "function",
-            parts: [
-                {
-                    functionResponse: {
-                        name,
-                        response: {
-                            name,
-                            content: functions[name](args),
-                        },
-                    },
+        const fr = [
+            {
+                functionResponse: {
+                    name,
+                    response: JSON.parse(await functions[name](args)),
                 },
-            ],
-        };
-        const request2 = {
-            contents: [prompt, content, fr],
-        };
-        const response2 = await model.generateContent(request2);
+            },
+        ]
+
+        console.dir(fr, { depth: null });
+        const request2 = JSON.stringify(fr)
+        const response2 = await chat.sendMessage(request2);
         const result2 = response2.response;
         return result2;
     } else {
