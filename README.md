@@ -1,22 +1,29 @@
 # HotelBot
 
 # Getting Started
+Clone the repository with the client submodule:
 
-__Follow this to get started__ **[Getting Started With Backend](./Getting_Started_Backend.md)**
+```bash
+	git clone --recursive git@github.com:2k4sm/HotelBot.git
+```
+
+__Follow this to get started with backend__ **[Getting Started With Backend](./Getting_Started_Backend.md)**
+
+__Follow this to get started with frontend__**[Getting Started With Frontend](./Getting_Started_Frontend.md)**
 
 # Technical Requirement Document
 
 ## Project Overview
 
-The project involves creating a chatbot for hotel booking management. The bot will handle user interactions for booking rooms, provide current booking information, and ensure data segregation between different hotels.
+The project involves creating a chatbot for hotel booking management. The bot will handle user interactions for booking rooms, provide current booking information.
 
 ## Functional Requirements
 
 ### Primary Functionalities
 
-- Respond to users with current booking information.
+- Respond to users with room details.
 - Create bookings after taking details from users.
-- Store user details and room booking information.
+- Store room booking information.
 - Uses conversation history as a context throughout the conversation.
 
 ### Chatbot Flow
@@ -46,7 +53,7 @@ The project involves creating a chatbot for hotel booking management. The bot wi
 
 - Node.js
 - Express.js
-- OpenAI API
+- GEMINI API
 
 ### Key Features
 
@@ -56,7 +63,6 @@ Implement function calling to simulate external API interactions (room booking).
 
 Implement basic error handling for invalid user inputs or API failures.
 
-## Entity Relation Diagram
 
 ## Frontend Requirements
 
@@ -74,27 +80,16 @@ Implement basic error handling for invalid user inputs or API failures.
 
 ### User Data
 
-- Store user details.
-- Store room details they are booking.
-- Store User Conversation Details.
+- Store booking details.
+- Store Conversation.
 
-### Room Data
-
-- Room number
-- Vacancy status
-- Next available date
-- Other relevant details
 
 ## Error Handling
 
 - Handle invalid user inputs gracefully.
 - Manage API failures with appropriate error messages.
 
-## Security and Data Privacy
-
-- Ensure data of one hotel is completely unlinked from other hotels.
-- Implement necessary security measures to protect user and booking data.
 
 ## Conclusion
 
-This document outlines the technical requirements for developing a hotel booking management chatbot. The bot will facilitate room bookings, provide booking information, and ensure data privacy and security across multiple hotels.
+This document outlines the technical requirements for developing a hotel booking management chatbot. The bot will facilitate room bookings, provide booking information.
