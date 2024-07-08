@@ -1,5 +1,4 @@
 import { gemini } from "../../config/apiconfig";
-import { createChatMessage } from "../../repositories/chatRepo";
 import { createChatHistory } from "../../services/chatHistory.service";
 import { functions } from "./geminiHelperFunctions";
 
@@ -47,7 +46,10 @@ export async function sendMessageAndProcessCalls(chat, message) {
             throw new Error("No parts");
         }
 
-        const callToProcess = content.parts[0].functionCall;
+        let callToProcess = content.parts[0].functionCall;
+        if (!callToProcess) {
+            callToProcess = content.parts[1].functionCall;
+        }
         if (callToProcess) {
             const { name, args } = callToProcess;
             const fn = functions[name];
