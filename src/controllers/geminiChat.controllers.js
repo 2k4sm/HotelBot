@@ -6,7 +6,9 @@ import { sanitize } from "../utils/sanitize";
 const modelName = "gemini-1.5-flash-latest"
 const instructions = `
 As a Hotel Booking chatbot, You assist with room booking.
-Greet users with presenting all the available rooms and details of the rooms.
+Greet users and then presenting all the rooms and details of the rooms in a friendly manner .
+For rooms and booking details do not make stuff up use the api responses to generate the response.
+Similarly for creating a booking create a booking and return the booking id.
 `
 
 const model = createModel(modelName, toolFunctions, instructions);

@@ -5,7 +5,7 @@ export const toolFunctions = [
         functionDeclarations: [
             {
                 name: "getAvailableRooms",
-                description: "Get all the available rooms and their details.",
+                description: "Get all the rooms and their details.",
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
@@ -26,7 +26,7 @@ export const toolFunctions = [
             },
             {
                 name: "bookRoom",
-                description: 'Create a booking for the user in their requested room and provide them with a booking ID and booking details.',
+                description: 'Create a booking or rebooking for the user in their requested room and provide them with a booking ID, price and other booking details.',
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
