@@ -1,4 +1,4 @@
-import { createBooking, deleteBooking, getAllBookings, getBookingById, updateBooking } from "../models/bookings";
+import { createBooking, getBookingById, updateBooking } from "../repositories/bookingsRepo";
 
 export async function fetchRooms() {
     try {

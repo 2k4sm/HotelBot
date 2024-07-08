@@ -1,4 +1,6 @@
 import { gemini } from "../../config/apiconfig";
+import { createChatMessage } from "../../repositories/chatRepo";
+import { createChatHistory } from "../../services/chatHistory.service";
 import { functions } from "./geminiHelperFunctions";
 
 export function createModel(modelName, toolFunctions, instructions) {
@@ -18,23 +20,22 @@ export function createChat(model, history) {
     return chat;
 }
 
-export async function sendMessageAndProcessCalls(chat, message, history) {
+export async function sendMessageAndProcessCalls(chat, message) {
     try {
         const result = await chat.sendMessage(message);
 
         const response = result.response
-        console.dir(response, { depth: null });
 
-        history.push(
-            {
-                role: "user",
-                parts: [{ text: message }]
-            },
-            {
-                role: "model",
-                parts: [{ text: response.text() }]
-            }
-        );
+        await createChatHistory({
+            role: "user",
+            parts: [{ text: message }]
+        })
+
+        await createChatHistory({
+            role: "model",
+            parts: [{ text: response.text() }]
+        })
+
 
         if (response.candidates.length === 0) {
             throw new Error("No candidates");
@@ -65,12 +66,10 @@ export async function sendMessageAndProcessCalls(chat, message, history) {
             const request2 = JSON.stringify(apiResp)
             const response2 = await chat.sendMessage(request2);
 
-            history.push(
-                {
-                    role: "model",
-                    parts: [{ text: response2.response.text() }]
-                }
-            );
+            await createChatHistory({
+                role: "model",
+                parts: [{ text: response2.response.text() }]
+            })
 
             const result2 = response2
             return result2;

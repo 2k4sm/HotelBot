@@ -3,7 +3,6 @@ import { Booking } from "../models/bookings";
 export const createBooking = async (bookingData) => {
     try {
         const booking = await Booking.create(bookingData);
-        console.log('Booking created:', booking.toJSON());
         return booking;
     } catch (error) {
         console.error('Error creating booking:', error);
@@ -13,7 +12,6 @@ export const createBooking = async (bookingData) => {
 export const getAllBookings = async () => {
     try {
         const bookings = await Booking.findAll();
-        console.log('All bookings:', JSON.stringify(bookings, null, 2));
         return bookings;
     } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -42,7 +40,6 @@ export const updateBooking = async (id, updateData) => {
         });
         if (updatedRows) {
             const updatedBooking = await getBookingById(id);
-            console.log('Booking updated:', updatedBooking.toJSON());
             return updatedBooking;
         } else {
             console.log('Booking not found or no changes made');

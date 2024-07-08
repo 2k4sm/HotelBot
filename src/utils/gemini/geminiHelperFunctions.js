@@ -81,15 +81,14 @@ export const toolFunctions = [
                     },
                     required: ["bookingId"]
                 }
-            }
-
+            },
         ],
     },
 ]
 
 
 export const functions = {
-    getAvailableRooms: async ({ name, price, description }) => {
+    getAvailableRooms: async () => {
         return await fetchRooms();
     },
     bookRoom: async ({ id, fullName, email, nights }) => {
@@ -101,5 +100,5 @@ export const functions = {
     },
     getBooking: async ({ bookingId }) => {
         return await getBooking(bookingId);
-    }
+    },
 };
