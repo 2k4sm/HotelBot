@@ -1,14 +1,21 @@
 import { createThread, runAssistant, handleRunStatus, createMessage } from "../utils/openai/openaiBotHelpers";
-
+import { sanitize } from "../utils/sanitize";
 export const assistantChat = async (req, res) => {
 
-    const { message, threadId } = req.body;
+    try {
+        const { message, threadId } = req.body;
 
-    await createMessage(threadId, message);
+        const { cleanMessage, cleanThreadId } = sanitize("gpt", message, threadId);
 
-    const runObject = await runAssistant(threadId);
+        await createMessage(cleanThreadId, cleanMessage);
 
-    await handleRunStatus(res, threadId, runObject);
+        const runObject = await runAssistant(threadId);
+
+        await handleRunStatus(res, threadId, runObject);
+
+    } catch (error) {
+        res.json({ error: error.message });
+    }
 };
 
 export const getThread = async (_, res) => {

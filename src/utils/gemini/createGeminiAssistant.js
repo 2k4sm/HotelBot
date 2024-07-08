@@ -62,7 +62,6 @@ export async function sendMessageAndProcessCalls(chat, message, history) {
                 },
             ]
 
-            console.dir(apiResp, { depth: null });
             const request2 = JSON.stringify(apiResp)
             const response2 = await chat.sendMessage(request2);
 
