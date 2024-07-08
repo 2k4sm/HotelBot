@@ -45,25 +45,25 @@ export async function sendMessageAndProcessCalls(chat, message) {
         if (content.parts.length === 0) {
             throw new Error("No parts");
         }
-
-        let callToProcess = content.parts[0].functionCall;
-        if (!callToProcess) {
-            callToProcess = content.parts[1].functionCall;
-        }
+        console.log(result.response.functionCalls())
+        let callToProcess = result.response.functionCalls();
+        let apiResp = [];
         if (callToProcess) {
-            const { name, args } = callToProcess;
-            const fn = functions[name];
-            if (!fn) {
-                throw new Error(`Unknown function "${name}"`);
-            }
-            const apiResp = [
-                {
-                    functionResponse: {
-                        name,
-                        response: JSON.parse(await functions[name](args)),
+            for (let call of callToProcess) {
+                const { name, args } = call;
+                const fn = functions[name];
+                if (!fn) {
+                    throw new Error(`Unknown function "${name}"`);
+                }
+                apiResp.push(
+                    {
+                        functionResponse: {
+                            name,
+                            response: JSON.parse(await functions[name](args)),
+                        },
                     },
-                },
-            ]
+                )
+            }
 
             const request2 = JSON.stringify(apiResp)
             const response2 = await chat.sendMessage(request2);
