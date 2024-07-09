@@ -1,5 +1,5 @@
 import { gemini } from "../../config/apiconfig";
-import { createChatHistory } from "../../services/chatHistory.service";
+import { createChatHistory, getChatHistory } from "../../services/chatHistory.service";
 import { functions } from "./geminiHelperFunctions";
 
 export function createModel(modelName, toolFunctions, instructions) {
@@ -21,7 +21,8 @@ export function createChat(model, history) {
 
 export async function sendMessageAndProcessCalls(chat, message) {
     try {
-        const result = await chat.sendMessage(message);
+
+        let result = await chat.sendMessage(message);
 
         const response = result.response
 
@@ -30,10 +31,33 @@ export async function sendMessageAndProcessCalls(chat, message) {
             parts: [{ text: message }]
         })
 
-        await createChatHistory({
-            role: "model",
-            parts: [{ text: response.text() }]
-        })
+        try {
+            if (result.response.candidates[0].content.parts[0].text) {
+                await createChatHistory({
+                    role: "model",
+                    parts: [{ text: result.response.candidates[0].content.parts[0].text }]
+                })
+            }
+        } catch (error) {
+            return {
+                response: {
+                    candidates: [
+                        {
+                            content: {
+                                parts: [
+                                    {
+                                        text: "I'm here to assist with professional inquiries related to hotel bookings and services. If you have any questions or need help with a booking, please let me know!"
+                                    }
+                                ],
+                                role: "model"
+                            }
+                        }
+                    ]
+                }           
+            }
+
+        }
+
 
 
         if (response.candidates.length === 0) {
@@ -45,39 +69,62 @@ export async function sendMessageAndProcessCalls(chat, message) {
         if (content.parts.length === 0) {
             throw new Error("No parts");
         }
-        console.log(result.response.functionCalls())
         let callToProcess = result.response.functionCalls();
-        let apiResp = [];
-        if (callToProcess) {
-            for (let call of callToProcess) {
-                const { name, args } = call;
-                const fn = functions[name];
-                if (!fn) {
-                    throw new Error(`Unknown function "${name}"`);
-                }
-                apiResp.push(
-                    {
-                        functionResponse: {
-                            name,
-                            response: JSON.parse(await functions[name](args)),
+
+        while (callToProcess) {
+            let apiResp = [];
+            if (callToProcess) {
+                for (let call of callToProcess) {
+                    const { name, args } = call;
+                    const fn = functions[name];
+                    if (!fn) {
+                        throw new Error(`Unknown function "${name}"`);
+                    }
+                    apiResp.push(
+                        {
+                            functionResponse: {
+                                name,
+                                response: JSON.parse(await functions[name](args)),
+                            },
                         },
-                    },
-                )
+                    )
+                }
+
+                const message = JSON.stringify(apiResp)
+                result = await chat.sendMessage(message);
+
+                try {
+                    if (result.response.candidates[0].content.parts[0].text) {
+                        await createChatHistory({
+                            role: "model",
+                            parts: [{ text: result.response.candidates[0].content.parts[0].text }]
+                        })
+                    }
+                } catch (error) {
+                    return {
+                        response: {
+                            candidates: [
+                                {
+                                    content: {
+                                        parts: [
+                                            {
+                                                text: "I'm here to assist with booking hotel rooms and addressing related inquiries or complaints. If you have any questions or need help with a booking, please let me know!"
+                                            }
+                                        ],
+                                        role: "model"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+
+                }
+
+                console.log(callToProcess)
+                callToProcess = result.response.functionCalls();
             }
-
-            const request2 = JSON.stringify(apiResp)
-            const response2 = await chat.sendMessage(request2);
-
-            await createChatHistory({
-                role: "model",
-                parts: [{ text: response2.response.text() }]
-            })
-
-            const result2 = response2
-            return result2;
-        } else {
-            return result;
         }
+        return result;
     } catch (error) {
         throw new Error(error);
     }
