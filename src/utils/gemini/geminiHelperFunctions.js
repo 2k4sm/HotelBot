@@ -66,7 +66,7 @@ export const toolFunctions = [
             },
             {
                 name: "cancelBooking",
-                description: "Cancel the booking with the provided bookingId.",
+                description: "Cancel the booking with the provided bookingId and provide the user with details of the cancelled booking.",
                 parameters: {
                     type: FunctionDeclarationSchemaType.OBJECT,
                     properties: {
